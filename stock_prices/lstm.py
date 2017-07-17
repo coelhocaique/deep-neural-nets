@@ -34,12 +34,13 @@ from keras.layers.recurrent import LSTM
 from keras.models import Sequential
 import keras.models as model_utils
 import h5py
+import keras as keras
 
 
 def load_model(path):
     model = None
     try:
-        model = km.load_model(path)
+        model = model_utils.load_model(path)
     except ImportError:
         model = Sequential()
 
@@ -51,7 +52,38 @@ def load_data():
 def normalised_data():
     return None
 
-def build_model(units,input_dim):
+def predict(model):
+    return model
+
+def study_predictions(predictions):
+    return None
+
+def train_model(model,epochs=1000,batch_size=240):
+    #apply early stopping as a further mechanism to prevent overtting
+    #after 10 epochs with no error descreasing, quit training
+    early_stopping=keras.callbacks.EarlyStopping(monitor='val_loss',
+                                                 min_delta=0,
+                                                patience=10,
+                                                verbose=0,
+                                                mode='min')
+
+    tensorboard = keras.callbacks.TensorBoard(log_dir='./tensorboard',
+                                             histogram_freq=1,
+                                             batch_size=batch_size
+                                             write_graph=True,
+                                             write_images=True)
+    model.fit(
+        X_train,
+        y_train,
+        batch_size=batch_size,
+        epochs=epochs,
+        validation_split=0.05,
+        validation_data=(X_test, y_test),
+        callbacks=[early_stopping,tensorboard])
+
+    return model
+
+def build_model(units=25,input_dim=1,output_dim=240,path=None):
     '''
     Input layer with 1 feature and 240 timesteps.
     LSTM layer with h = 25 hidden neurons and a dropout value of 0.16.
@@ -59,11 +91,44 @@ def build_model(units,input_dim):
         leading to a sensible number of approximately 93 parameters per observation.
     Output layer (dense layer) with two neurons and softmax activation function - a standard configuration.
     '''
-    model = Sequential()
+    model = load_model(path)
     model.add(LSTM(input_dim=input_dim,
-                   return_sequences=True,
-                   activation=Activation("sigmoid")))
-    return None
+                   output_dim=output_dim
+                   return_sequences=True))
+
+    model.add(LSTM(units=units,
+                   return_sequences=False))
+
+    model.add(Dropout(pow(0.1,6)))
+
+    model.add(Dense(units=2,
+                    output_dim=1))
+    model.add(Activation('softmax'))
+
+    #prepares the model for training
+    model.compile(loss='mse', optimizer='rmsprop',metrics=['accuracy'])
+
+    return model
 
 def save_model(model,path):
     model_utils.save_model(model,path)
+
+def generate_sequences(first_train=True,path=None):
+    model=None
+    #load data and apply study for training lstm
+    #incomplete call && function
+    load_data()
+
+    if first_train:
+        model=build_model()
+    else:
+        model=load_model(path)
+
+    #missing parameters
+    model=train_model(model)
+
+    predictions=predict(model)
+
+    output_predictions=study_predictions(predictions)
+
+    return output_predictions
