@@ -97,13 +97,13 @@ def build_model(units=25,input_dim=1,output_dim=240,path=None):
                    return_sequences=True))
 
     model.add(LSTM(units=units,
-                   return_sequences=False))
-
-    model.add(Dropout(pow(0.1,6)))
+                   return_sequences=False,
+                   dropout=float(pow(0.1,6)),
+                   use_bias=True))
 
     model.add(Dense(units=2,
-                    output_dim=1))
-    model.add(Activation('softmax'))
+                    output_dim=1,
+                    activation='softmax'))
 
     #prepares the model for training
     model.compile(loss='mse', optimizer='rmsprop',metrics=['accuracy'])
