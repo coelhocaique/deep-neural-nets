@@ -8,8 +8,6 @@
     The main goal is to use the predictions of this Neural Network integrated with
     Metatrade 5, which will have an automated bot to place orders by itself on this platform.
 
-    Our main focus is to work with Mini-dollar(see docs) <-docs here ->
-
     Our final product will be the Metatrade bot, which will be sold in binary files.
 
     This idea was primary developed on our TCC(Graduation project) in 2017, which founded
@@ -46,8 +44,32 @@ def load_model(path):
 
     return model
 
-def load_data():
-    return None
+def load_data(path):
+    f = open(path,'r').read()
+    return f.split('\n')
+
+def study_period(data,number_of_days = 240,m = 1):
+    #calculate return
+    profit = []
+    for i in range(1,len(data)):
+        try:
+            current_return = (float(data[i])/float(data[i-m])) - 1
+            profit.append(current_return)
+        except ValueError,e:
+            print "error",e,"on line",i
+
+    #standardize return
+    returns = np.array(profit)
+    mean = np.mean(returns)
+    standard_deviation =  np.std(returns)
+    returns = [(ret - mean) / standard_deviation for ret in returns]
+
+    #75% of the data is for training, the other 25% is for validation
+    trainig_data,training_labels = 0,0
+    validation_data,validation_labels = 0,0
+
+
+
 
 def normalised_data():
     return None
@@ -92,7 +114,8 @@ def build_model(units=25,input_dim=1,output_dim=240,path=None):
     Output layer (dense layer) with two neurons and softmax activation function - a standard configuration.
     '''
     model = load_model(path)
-    model.add(LSTM(input_dim=input_dim,
+    model.add(LSTM(units=input_dim
+                   input_dim=input_dim,
                    output_dim=output_dim
                    return_sequences=True))
 
@@ -110,24 +133,28 @@ def build_model(units=25,input_dim=1,output_dim=240,path=None):
 
     return model
 
-def save_model(model,path):
+def save_model(model,path,save_to_json = True):
+    if save_to_json:
+        f = open(path,'w')
+        f.write(model.to_json())
+        f.close()
     model_utils.save_model(model,path)
 
-def generate_sequences(first_train=True,path=None):
+def generate_sequences(first_train=True,path=None,path_data = 'itau_2009-02-02_2017-03-06_closing_price.csv'):
     model=None
     #load data and apply study for training lstm
     #incomplete call && function
-    load_data()
+    data = load_data(path_data)
 
-    if first_train:
-        model=build_model()
-    else:
-        model=load_model(path)
+    trainig_data,training_labels,validation_data,validation_labels = study_period(data)
+
+    model = build_model()
 
     #missing parameters
     model=train_model(model)
 
     predictions=predict(model)
+    #km.save_model(model,os.path.abspath("model.h5"))
 
     output_predictions=study_predictions(predictions)
 
