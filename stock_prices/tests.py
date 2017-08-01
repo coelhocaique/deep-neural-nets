@@ -14,6 +14,21 @@ for i in range(1,len(data)):
 returns = np.array(profit)
 mean = np.mean(returns)
 standard_deviation =  np.std(returns)
-returns = np.array([(ret - mean) / standard_deviation for ret in returns])
+returns = [(ret - mean) / standard_deviation for ret in returns]
+labels = []
+sequences = []
+for i in range(0,len(returns) - 2):
+    try:
+        new_returns = np.array(returns[i:239 + i])
+        mean = np.mean(new_returns)
+        if returns[239 + i] > mean: label = 1
+        else: label = -1
+        labels.append(label)
+        sequences.append(new_returns)
+        t_plus_1 = returns[239 + i]
+        print "Sequence ",i ,"\nmean :",mean,"\nlabel(t+1): ",label,t_plus_1,"\n","subtracted: ",(t_plus_1 - mean)
+        print "real profit: ",profit[239 + i],"\n"
+    except IndexError:
+        break
 
-print returns.shape
+print len(labels) == len(sequences)

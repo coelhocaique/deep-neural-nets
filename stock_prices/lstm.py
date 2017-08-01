@@ -48,7 +48,11 @@ def load_data(path):
     f = open(path,'r').read()
     return f.split('\n')
 
-def study_period(data,number_of_days = 240,m = 1):
+def study_period(data,timesteps = 240,m = 1):
+    '''
+        input_shape = (batch_size, timesteps, input_dim)`
+        input_shape = [N ,240,1]
+    '''
     #calculate return
     profit = []
     for i in range(1,len(data)):
