@@ -22,7 +22,7 @@
 
     All Rights Reserved
 '''
-import lstm, time, os
+import time, os
 import numpy as np
 from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
@@ -70,12 +70,12 @@ def build_model(units=25,input_dim=1,output_dim=240,path=None):
                    return_sequences=True))
 
     model.add(LSTM(units=units,
-                   return_sequences=False,
                    dropout=float(pow(0.1,6)),
-                   use_bias=True))
+                   return_sequences=False))
 
-    model.add(TimeDistributedDense(2))
-
+    model.add(Dense(units=2,
+                    output_dim=1,
+                    activation='softmax'))
 
     #prepares the model for training
     model.compile(loss='mse', optimizer='rmsprop',metrics=['accuracy'])
@@ -108,6 +108,7 @@ def fit_to_shape(data,full_batch_size,timesteps=240,input_dim=1):
     validate_data,validate_labels =reshaped_data[train_index:],labels[train_index:]
 
     return train_data,train_labels,validate_data,validate_labels
+
 
 def study_period(data,timesteps = 240,m = 1,input_dim=1):
     '''
@@ -154,7 +155,7 @@ def train_model(model,train_data,train_labels,
         batch_size=batch_size,
         epochs=epochs,
         validation_split=0.05,
-        callbacks=[early_stopping,tensorboard])
+       callbacks=[early_stopping,tensorboard])
     print 'Trainign time: ',(time.time() - start) * 60,'minutes'
     return model
 
@@ -176,16 +177,16 @@ def generate_sequences(first_train=True,
     model = build_model(path)
 
     train_data,train_labels,validate_data,validate_labels = study_period(data)
-
-    model = train_model(model,train_data,train_labels,epochs = 1)
+    print train_data.shape
+    #model = train_model(model,train_data,train_labels,epochs = 1)
 
     #km.save_model(model,os.path.abspath("model.h5"))
 
-    return evaluate_model(model,validate_data,validate_labels)
+    return None #evaluate_model(model,validate_data,validate_labels)
 
 
-path = os.path.abspath(str(time.time()) +"_model.h5")
-score,accuracy = generate_sequences(path = path)
-
-print '%s: %.2f%% ' % ('Score',score*100)
-print '%s: %.2f%% ' % ('Accuracy',accuracy*100)
+#path = os.path.abspath(str(time.time()) +"_model.h5")
+#generate_sequences()
+#
+# print '%s: %.2f%% ' % ('Score',score*100)
+# print '%s: %.2f%% ' % ('Accuracy',accuracy*100)
