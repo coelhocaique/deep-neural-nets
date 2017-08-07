@@ -39,10 +39,13 @@ def load_model(path):
 
 def save_model(model,path,save_to_json=True):
     if save_to_json:
-        f = open(path + '.json','w')
-        f.write(model.to_json())
-        f.close()
-    model_utils.save_model(model,path + '.h5')
+        save_to_file(os.path.abspath('jsons/'+ path + '.json'),model.to_json())
+    model_utils.save_model(model,os.path.abspath('models/'+ path + '.h5'))
+
+def save_to_file(path,content):
+    f = open(path,'w')
+    f.write(content)
+    f.close()
 
 def build_model(input_shape,hidden_units=25,timesteps=240,path=None):
     '''
@@ -93,8 +96,10 @@ def train_model(model,train_data,
         epochs=epochs,
         validation_data = (validate_data, validate_labels),
         callbacks=[early_stopping,tensorboard])
-    print 'Training time: ',time.time() - start
-    return model
+
+    training_time = int(time.time() - start) / 60
+    print 'Training time: ',training_time,' minutes'
+    return model,training_time
 
 def evaluate_model(model,validate_data,validate_labels):
     score, accuracy = model.evaluate(validate_data,validate_labels)
@@ -103,20 +108,20 @@ def evaluate_model(model,validate_data,validate_labels):
 def predict(model):
     return model
 
-def train(path_data = 'itau_2009-02-02_2017-03-06_closing_price.csv'):
+def train(path_data = 'dataset/itau_2009-02-02_2017-03-06_closing_price.csv'):
 
     train_data,train_labels,validate_data,validate_labels = data.load(path_data)
 
     model = build_model(train_data.shape[1:])
 
-    model = train_model(model,train_data,
-                        train_labels,validate_data,
-                        validate_labels,epochs = 1)
+    model,training_time = train_model(model,train_data,
+                                      train_labels,validate_data,
+                                      validate_labels,epochs = 1)
 
     score, accuracy = evaluate_model(model,validate_data,validate_labels)
 
-    model_name = str(time.time()) + "_model"
+    model_name = "daily_" + str(time.time()) + "_score_" + str(score * 100)
 
-    save_model(model,model_name,save_to_json = False)
+    save_model(model,model_name)
 
-    return score * 100,model_name
+    return score,accuracy,model_name,training_time
