@@ -82,8 +82,8 @@ class EarlyStoppingLoadWeights(Callback):
                 self.model.load_weights(self.path)
                 self.wait = 0
                 if self.verbose > 0:
-                    print 'Reloading weights after ' + self.monitor + 'not ' + self.mode + 'during ' + self.patience + ' epochs'
-                    print 'Reloading on epoch ' + epoch
+                    print 'Reloading weights from ' + str(self.path)
+                    print 'Reloading on epoch ' + str(epoch)
             else:
                 self.wait += 1
 
