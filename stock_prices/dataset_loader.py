@@ -13,7 +13,7 @@ def fit_to_shape(data,full_batch_size,timesteps=240,input_dim=1):
         #the paper extracts the cross-section median, but it not applied for us
         #we just extracts the median
         sequence = np.array(data[i:timesteps + i])
-        mean = np.mean(sequence)
+        mean = np.median(sequence)
         if data[timesteps + i] > mean:
             label = 1
         else:
@@ -27,8 +27,8 @@ def fit_to_shape(data,full_batch_size,timesteps=240,input_dim=1):
     for i in range(len(sequences)):
         reshaped_data[i] = sequences[i].reshape(len(sequences[i]),input_dim)
 
-    #75% is for training, 25% validating
-    train_index = int(full_batch_size * 0.75)
+    #80% is for training, 20% validating
+    train_index = int(full_batch_size * 0.80)
     train_data = reshaped_data[:train_index]
     train_labels = labels[:train_index]
     validate_data = reshaped_data[train_index:]
