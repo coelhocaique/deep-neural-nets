@@ -50,7 +50,7 @@ def study_period(data,timesteps = 240,m = 1,input_dim=1):
 
     return fit_to_shape(returns,full_batch_size)
 
-f = open("itau_2009-02-02_2017-03-06_closing_price.csv", 'r').read()
+f = open("dataset/itau_2009-02-02_2017-03-06_closing_price.csv", 'r').read()
 data = f.split('\n')
 train_data,train_labels,validate_data,validate_labels = study_period(data)
 
@@ -67,10 +67,18 @@ train_data,train_labels,validate_data,validate_labels = study_period(data)
 # standard_deviation =  np.std(returns)
 # returns = [(ret - mean) / standard_deviation for ret in returns]
 
-print 'train_data: ',train_data.shape
-print 'train_labels: ',train_labels[1319]
-print 'validate_data: ',validate_data[439].shape
-print 'validate_labels: ',validate_labels[439]
+#print 'train_data: ',train_data[0]
+f = open('train_mean.txt','w')
+for label in train_labels:
+    f.write(str(label) + '\n')
+f.close()
+f = open('validate_mean.txt','w')
+for label in validate_labels:
+    f.write(str(label) + '\n')
+f.close()
+#print 'train_labels: ',train_labels
+#print 'validate_data: ',validate_data[0]
+#print 'validate_labels: ',validate_labels
 # labels = []
 # sequences = []
 # batch_size = 0
