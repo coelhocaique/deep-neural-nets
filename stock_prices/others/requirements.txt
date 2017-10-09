@@ -1,0 +1,6 @@
+- tensorflow
+- tensoboard
+- keras
+- numpy
+- oandapyV20
+- matplotlib
