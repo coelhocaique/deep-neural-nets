@@ -34,7 +34,7 @@ def load_model(path):
         try:
             model = model_utils.load_model(path)
         except ImportError:
-            print model.to_json()
+            print (model.to_json())
 
     return model
 
@@ -69,8 +69,8 @@ def build_model(input_shape, hidden_units=25, timesteps=240, path=None):
                    recurrent_dropout=0.2,
                    return_sequences=False))
 
-    model.add(Dense(units=1,
-                    activation='sigmoid'))
+    model.add(Dense(units=3,
+                    activation='softmax'))
     # prepares the model for training
     model.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 
@@ -112,7 +112,7 @@ def train_model(model, train_data, train_labels,
         callbacks=[early_stopping, checkpoint, tensorboard])
 
     training_time = int(time.time() - start) / 60
-    print 'Training time: ', training_time, ' minutes'
+    print ('Training time: ', training_time, ' minutes')
 
     model.load_weights(filepath)
     os.remove(filepath)
@@ -150,24 +150,8 @@ def train(base_name, path_data='dataset/train.csv',
 
     save_model(model, model_name)
 
-    print 'score: ', (score * 100)
-    print 'accuracy: ', (accuracy * 100)
-    print 'model name:', model_name
+    print ('score: ', (score * 100))
+    print ('accuracy: ', (accuracy * 100))
+    print ('model name:', model_name)
 
     return score, accuracy, model_name, training_time
-
-
-def continue_traininig(model_name, path_data='dataset/itau_2009-02-02_2017-03-06_closing_price.csv'):
-    model = load_model(model_name)
-
-    train_data, train_labels, validate_data, validate_labels = data.load(path_data)
-
-    model, training_time = train_model(model, train_data,
-                                       train_labels, validate_data,
-                                       validate_labels, batch_size=120, epochs=10)
-
-    score, accuracy = evaluate_model(model, validate_data, validate_labels)
-
-    save_model(model, model_name)
-
-    return score, accuracy

@@ -11,7 +11,7 @@ def fit_to_shape(data, full_batch_size, type_net, labels_in=None, timesteps=240,
     sequences = []
 
     if labels_in:
-        print 'training from raw labels'
+        print ('training from raw labels')
 
     for i in range(full_batch_size):
         sequence = np.array(data[i:timesteps + i])
@@ -21,7 +21,13 @@ def fit_to_shape(data, full_batch_size, type_net, labels_in=None, timesteps=240,
         if labels_in:
             label = labels_in[timesteps + i]
         else:
-            label = 1 if next_value > last_value else 0
+            if next_value == last_value:
+                label = [0, 1, 0]
+            elif next_value > last_value:
+                label = [0, 0, 1]
+            else:
+                label = [1, 0, 0]
+            # label = 1 if next_value > last_value else 0
 
         labels.append(label)
         sequences.append(sequence)
@@ -58,8 +64,8 @@ def study_period(data, timesteps=240, m=1, input_dim=1):
             current_return = (float(data[i])/float(data[i-m])) - 1
             # current_return = float(data[i])
             profit.append(current_return)
-        except ValueError, e:
-            print "error", e, "on line", i
+        except (ValueError, e):
+            print ("error on line", i)
 
     # standardize return
     returns = np.array(profit)
