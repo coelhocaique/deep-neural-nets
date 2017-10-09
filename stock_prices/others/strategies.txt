@@ -1,0 +1,34 @@
+-- strategy 1 :
+ - the normalized returns are the input and the labels say whether or not the next value
+ - outperforms the last value
+ - if next return value underperforms last value it doesn't mean exactly that the share is going down
+ - depending on your current return you can keep trading up
+ - 74 % accuracy
+
+-- strategy 2 :
+ - the normalized returns are the input and the labels say whether the next return will
+ - be positive or negative
+ - the idea was to combine this with strategy 1, but got just
+ - 54 % accuracy
+
+-- strategy 3 :
+ - the normalized data is the input and the labels say whether the share is going up or down
+ - 55 % accuracy not good
+
+-- strategy 4 :
+ - the normalized data is the input and the labels say whether the next normalized value
+ - is greater or not than the last value
+ -- 55 % accuracy
+
+ -- strategy 5 :
+  - data not normalized as input and the labels say whether the next value
+  - is greater or not than the last value
+
+-- strategy 6 :
+   - the returns are the input and the labels say whether the next return will
+   - be positive or negative
+
+-- strategy 7 :
+    - inputs are -1 and 1 and the labels say whether the next return will
+    - be positive or negative
+    - the idea was to combine this with strategy 1, but got just
