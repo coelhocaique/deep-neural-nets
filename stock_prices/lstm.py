@@ -4,11 +4,8 @@
     To eliminate Vanish and Exploding Gradient we use LSTM(Long Short-Term Memory), which uses
         a gating technique to deal with it
 
-    This implementation follows the study provided on this paper <-paper here->
-    The main goal is to use the predictions of this Neural Network integrated with
-    Metatrade 5, which will have an automated bot to place orders by itself on this platform.
-
-    Our final product will be the Metatrade bot, which will be sold in binary files.
+    This implementation follows the study provided on this paper https://www.econstor.eu/bitstream/10419/157808/1/886576210.pdf
+    with some modifications
 
     This idea was primary developed on our TCC(Graduation project) in 2017, which founded
     Mammon Trading  2017 - http://www.mammontrading.com.br/
@@ -42,7 +39,7 @@ def load_model(path):
 def save_model(model, path, save_to_json=False):
     if save_to_json:
         save_to_file(os.path.abspath('jsons/' + path + '.json'), model.to_json())
-    model_utils.save_model(model, os.path.abspath('models/' + path + '.h5'))
+    model_utils.save_model(model, os.path.abspath('/output/' + path + '.h5'))
 
 
 def save_to_file(path, content):
@@ -125,8 +122,8 @@ def evaluate_model(model, validate_data, validate_labels, batch_size=120):
     return score, accuracy
 
 
-def predict(model, data, timesteps=240, batch_size=120):
-    predictions = model.predict(data, batch_size=batch_size, verbose=1, timesteps=timesteps)
+def predict(model, data, batch_size=120):
+    predictions = model.predict(data, batch_size=batch_size, verbose=1)
     return predictions
 
 

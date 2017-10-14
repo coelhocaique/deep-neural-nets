@@ -1,3 +1,4 @@
+# account token : 8979703ec9eb299b9d8fd6af46603346-83aaa75c48b2eb71ee5bab916eeb2e6d
 import json
 import calendar as cal
 import oandapyV20 as api
@@ -7,23 +8,23 @@ import datetime
 print (datetime.datetime.now().time(), 'extraction begins ...\n')
 
 oanda = api.API(environment="practice",
-                access_token="")
+                access_token="8979703ec9eb299b9d8fd6af46603346-83aaa75c48b2eb71ee5bab916eeb2e6d")
 
 params = {
   "granularity": "M1"
 }
 
-base_from = 'T11:00:00Z'
+base_from = 'T00:00:00Z'
 base_to = 'T23:59:00Z'
-year = 2005
-month = 1
+year = 2017
+month = 7
 day = 1
 last_day_of_month = cal.monthrange(year, month)[1]
 closing_prices = []
 
 while True:
 
-    if year == 2017 and month == 7:
+    if year == 2017 and month == 10:
         break
 
     m = str(month) if len(str(month)) > 1 else '0' + str(month)
@@ -45,8 +46,9 @@ while True:
     candles = response['candles']
 
     for c in candles:
+        time = c['time']
         mid = c['mid']
-        closing_prices.append(mid['c'])
+        closing_prices.append([mid['c'], time])
 
     print ('Amount of prices: ', len(closing_prices))
 
@@ -62,12 +64,12 @@ while True:
 
     print ('Finished processing day: ', extracted)
 
-file = open('EUR_USD_M1_2005-01-01_TO_2017-06-30.csv', 'w')
+file = open('dataset/EUR_USD_M1_2017-07-01_TO_2017-09-30.csv', 'w')
 
 print ('Writing to file ...')
-
+file.write('Price  ' + ' Date')
 for prices in closing_prices:
-    file.write(prices + '\n')
+    file.write(prices[0] + ' ' + prices[1] + '\n')
 
 file.close()
 
