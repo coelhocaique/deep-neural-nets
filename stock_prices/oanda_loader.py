@@ -1,4 +1,3 @@
-# account token : 8979703ec9eb299b9d8fd6af46603346-83aaa75c48b2eb71ee5bab916eeb2e6d
 import json
 import calendar as cal
 import oandapyV20 as api
@@ -8,7 +7,7 @@ import datetime
 print (datetime.datetime.now().time(), 'extraction begins ...\n')
 
 oanda = api.API(environment="practice",
-                access_token="8979703ec9eb299b9d8fd6af46603346-83aaa75c48b2eb71ee5bab916eeb2e6d")
+                access_token="")
 
 params = {
   "granularity": "M1"
